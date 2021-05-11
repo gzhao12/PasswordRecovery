@@ -1,20 +1,20 @@
 import argparse
-from itertools import permutations
-from project.cpu_guesser import gen_rand_lower_string, gen_rand_mix_string
 import numpy as np
-import sys
-import string
 import time
 import torch
+import utils
 
-sys.path.append('../')
-from cpu_guesser import (LOWERCASE, MIXCASE, ALPHANUM, SPECIAL,
-                        gen_rand_lower_string, gen_rand_mix_string,
-                        gen_gen_rand_mix_string, gen_rand_special_string)
 
 def torch_guess(passwd_type, length):
-    idx_list = list(range(0, len(passwd_type)))
-    chars_dict = {k: v for k,v in enumerate(passwd_type)}
+    func = utils.SWITCHER.get(passwd_type)
+    passwd = func(length)
+    print(f"Password is: {passwd}")
+    guess = None
+
+    start = time.time()
+    chars = utils.TYPE_DICT[passwd_type]
+    idx_list = list(range(0, len(chars)))
+    chars_dict = {k: v for k,v in enumerate(chars)}
 
     tensor_a = torch.tensor(idx_list)
     tensor_b = tensor_c = tensor_d = tensor_a
@@ -29,8 +29,13 @@ def torch_guess(passwd_type, length):
 
     for i, arr in enumerate(out):
         arr = ''.join(arr)
-        print(arr)
+        if arr == passwd:
+            guess = arr
+            break
+    end = time.time()
 
+    print(f"Guessed password is {guess}")
+    print(f"Made {i} 'guesses' in {end - start} seconds.")
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -38,14 +43,7 @@ if __name__ == '__main__':
     parser.add_argument('length', metavar='N', type=int, help='Number of chars in password')
     args = parser.parse_args()
 
-    ptype_dict = {
-        'LOWERCASE': LOWERCASE,
-        'MIXCASE': MIXCASE,
-        'ALPHANUM': ALPHANUM,
-        'SPECIAL': SPECIAL,
-    }
-
     start = time.time()
-    torch_guess(ptype_dict[args.passwd_type], args.length)
+    torch_guess(args.passwd_type, args.length)
     end = time.time()
     print(f"Total time taken to guess password: {end - start} seconds.")
