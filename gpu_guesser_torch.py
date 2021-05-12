@@ -6,6 +6,14 @@ import utils
 
 
 def torch_guess(passwd_type, length):
+    '''
+    This function leverages PyTorch's cartesian_prod function to use
+    CUDA to generate permutations of `length` number of tensors and
+    then converts the permutations to strings
+    :param passwd_type: the types of characters in the password
+    :param length: the length of the password
+    :return None
+    '''
     func = utils.SWITCHER.get(passwd_type)
     passwd = func(length)
     print(f"Password is: {passwd}")
@@ -16,10 +24,14 @@ def torch_guess(passwd_type, length):
     idx_list = list(range(0, len(chars)))
     chars_dict = {k: v for k,v in enumerate(chars)}
 
-    tensor_a = torch.tensor(idx_list)
-    tensor_b = tensor_c = tensor_d = tensor_a
+    tensor = torch.tensor(idx_list)
+    tensors = [tensor for i in range(0, length)]
 
-    permutations = torch.cartesian_prod(tensor_a, tensor_b, tensor_c, tensor_d)
+    start = time.time()
+    permutations = torch.cartesian_prod(*tensors)
+    end = time.time()
+
+    print(f"Time taken to generate permutations: {end - start} seconds")
 
     permutations = permutations.numpy()
     permutations = permutations.astype(object)
@@ -39,7 +51,7 @@ def torch_guess(passwd_type, length):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('passwd_type', metavar='PType', help='Type of chars in password')
+    parser.add_argument('passwd_type', metavar='T', help='Type of chars in password')
     parser.add_argument('length', metavar='N', type=int, help='Number of chars in password')
     args = parser.parse_args()
 
