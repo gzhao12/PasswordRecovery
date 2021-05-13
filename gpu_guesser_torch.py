@@ -31,23 +31,22 @@ def torch_guess(passwd_type, length):
     permutations = torch.cartesian_prod(*tensors)
     end = time.time()
 
-    print(f"Time taken to generate permutations: {end - start} seconds")
+    print(f"Time taken to generate products: {end - start} seconds")
 
     permutations = permutations.numpy()
     permutations = permutations.astype(object)
-    sort_idx = np.argsort(list(chars_dict.keys()))
-    idx = np.searchsorted(list(chars_dict.keys()), permutations, sorter=sort_idx)
-    out = np.asarray(list(chars_dict.values()))[sort_idx][idx]
 
-    for i, arr in enumerate(out):
-        arr = ''.join(arr)
-        if arr == passwd:
-            guess = arr
+    permutations = [''.join([chars[char] for char in seq]) for seq in permutations]
+
+    for i, perm in enumerate(permutations):
+        if perm == passwd:
+            guess = perm
             break
     end = time.time()
 
     print(f"Guessed password is {guess}")
     print(f"Made {i} 'guesses' in {end - start} seconds.")
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
