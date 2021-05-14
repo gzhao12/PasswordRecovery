@@ -49,7 +49,10 @@ def product_guess(passwd, passwd_type, length):
     end = time.time()
     print(f"Time taken to generate products: {end - start} seconds.")
 
+    start = time.time()
     guesses = [''.join(guess) for guess in guesses]
+    end = time.time()
+    print(f"Time taken to join: {end - start} seconds")
 
     start = time.time()
     # We loop through here to simulate guessing instead of just using list.index()
@@ -74,7 +77,10 @@ def homebrew_guess(passwd, passwd_type, length):
     end = time.time()
     print(f"Time taken to generate homebrew products: {end - start} seconds.")
 
+    start = time.time()
     guesses = [''.join(guess) for guess in guesses]
+    end = time.time()
+    print(f"Time taken to join: {end - start} seconds")
 
     start = time.time()
     # We loop through here to simulate guessing instead of just using list.index()
@@ -99,7 +105,10 @@ if __name__ == '__main__':
     print(f"Password is: {passwd}")
 
     # integer_product(passwd, args.passwd_type, args.length)
+    start = time.time()
     homebrew_guess(passwd, args.passwd_type, args.length)    
+    end = time.time()
+    print(f"Total time taken to guess password: {end - start} seconds.")
 
     start = time.time()
     product_guess(passwd, args.passwd_type, args.length)

@@ -5,6 +5,21 @@ import torch
 import utils
 
 
+def move_to_gpu(value):
+    '''
+    Move the tensor to GPU
+    :param value: the tensor to move onto the GPU
+    :return the GPU stored tensor
+    '''
+    if torch.cuda.is_available():
+        dev = "cuda:0"
+    else:
+        dev = "cpu"
+    device = torch.device(dev)
+    value = value.to(device)
+
+    return value
+
 def torch_guess(passwd_type, length):
     '''
     This function leverages PyTorch's cartesian_prod function to use
@@ -22,10 +37,10 @@ def torch_guess(passwd_type, length):
     start = time.time()
     chars = utils.TYPE_DICT[passwd_type]
     idx_list = list(range(0, len(chars)))
-    chars_dict = {k: v for k,v in enumerate(chars)}
 
     tensor = torch.tensor(idx_list)
     tensors = [tensor for i in range(0, length)]
+    tensors = [move_to_gpu(tensor) for tensor in tensors]
 
     start = time.time()
     permutations = torch.cartesian_prod(*tensors)
@@ -33,7 +48,7 @@ def torch_guess(passwd_type, length):
 
     print(f"Time taken to generate products: {end - start} seconds")
 
-    permutations = permutations.numpy()
+    permutations = permutations.cpu().numpy()
     permutations = permutations.astype(object)
 
     permutations = [''.join([chars[char] for char in seq]) for seq in permutations]
