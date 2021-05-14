@@ -51,7 +51,10 @@ def torch_guess(passwd_type, length):
     permutations = permutations.cpu().numpy()
     permutations = permutations.astype(object)
 
+    start = time.time()
     permutations = [''.join([chars[char] for char in seq]) for seq in permutations]
+    end = time.time()
+    print(f"Total time taken to join: {end - start} seconds.")
 
     for i, perm in enumerate(permutations):
         if perm == passwd:
